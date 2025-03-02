@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lorentz Sim</title>
+    <style>
+        body {
+            background: #000000;
+            color: wheat;
+        }
+
+        .canvas_cont {
+
+            border: 2px solid #d6d6d6;
+            width: 80vw;
+            height: 90vh;
+            padding: 20px;
+
+        }
+
+        .sidebar {
+        
+            padding: 20px;
+            border: 2px solid #d6d6d6;
+            height: 90vh;
+            width: 16vw;
+
+        }
+
+        .slider-container {
+            position: relative;
+            width: 300px;
+            text-align: center;
+        }
+
+        .slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            background: #333;
+            border-radius: 5px;
+            outline: none;
+            opacity: 0.9;
+            transition: opacity 0.2s;
+        }
+
+        .slider:hover {
+            opacity: 1;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #0f9d58;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 0 10px #0f9d58;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #0f9d58;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 0 10px #0f9d58;
+        }
+
+        .tooltip {
+            position: absolute;
+            background: #222;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            transform: translateX(-50%);
+            top: -30px;
+            opacity: 0;
+            transition: opacity 0.2s, top 0.2s;
+        }
+    </style>
+</head>
+<!-- 
+Flexbox Quick Reference:
+
+1. Parent (Flex Container):
+   display: flex;             /* Enables Flexbox */
+   flex-direction: row;       /* Main axis: row (default), column, row-reverse, column-reverse */
+   justify-content: flex-start; /* Align items along the main axis */
+     - flex-start | flex-end | center | space-between | space-around | space-evenly 
+   align-items: stretch;      /* Align items along the cross axis */
+     - stretch | flex-start | flex-end | center | baseline 
+   flex-wrap: nowrap;         /* Wrap items */
+     - nowrap | wrap | wrap-reverse
+
+2. Child (Flex Items):
+   flex-grow: 1;              /* How much item grows (default 0) */
+   flex-shrink: 1;            /* How much item shrinks (default 1) */
+   flex-basis: auto;          /* Initial size before growing/shrinking */
+   align-self: auto;          /* Overrides parent align-items */
+     - auto | flex-start | flex-end | center | baseline | stretch 
+   order: 0;                  /* Controls item order (default 0) */
+
+3. Shorthand:
+   flex: grow shrink basis;   /* Example: flex: 1 1 auto; */
+
+-->
+
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/14.0.1/math.js"
+        integrity="sha512-ldafwBWmh8q0wplbjDzai4As66n/6e0kxw51a+LRJ6+aZ27t0oGpz7HH5dUh+MwWLacrsF8cGT4zR0p2S3QHtA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <div style="display: flex; flex-direction: row;">
+        <div class="sidebar">
+            <h1>Settings</h1>
+
+            <b>DRAFT, SIM PROBABLY HAS SOME ERRORS</b>
+
+            <hr>
+            <p>Electron Speed</p>
+            <div class="slider-container">
+                <div id="current_speed_tooltip" class="tooltip">50</div>
+                <input id="current_speed" type="range" min="0" max="100" value="50" class="slider">
+            </div>
+            
+            <p>Particle Speed</p>
+            <div class="slider-container">
+                <div id="particle_speed_tooltip" class="tooltip">50</div>
+                <input id="particle_speed" type="range" min="0" max="100" value="50" class="slider">
+            </div>
+
+            <p >The blue particles are electrons, the red particles are stationary "holes". <br>The red vector represents the velocity of a charged particle, and the magenta-colored vector is the force on this particle due to the moving electrons (Actually calculated per electron)</p>
+
+        </div>
+
+        <div id="canvas_container" class="canvas_cont">
+        <canvas id="vectorCanvas"></canvas>
+    </div>
+        <script src="script.js"></script>
+
+        <script>
+
+            function register_slider(slider_id, cb) {
+                console.log("Register slider", slider_id)
+                const slider = document.getElementById(slider_id);
+                const tooltip = document.getElementById(slider_id + "_tooltip");
+
+                slider.addEventListener("input", function () {
+                    tooltip.innerText = this.value;
+                    let percent = (this.value - this.min) / (this.max - this.min);
+                    tooltip.style.left = `${percent * 100}%`;
+                    tooltip.style.opacity = 1;
+                    cb(percent)
+                });
+
+                slider.addEventListener("mouseleave", function () {
+                    tooltip.style.opacity = 0;
+                });
+
+
+            }
+            register_slider("current_speed", setElectronSpeedSlider);
+            register_slider("particle_speed", setParticleSpeedSlider);
+
+        </script>
+    </div>
+
+</body>
+
+</html>
