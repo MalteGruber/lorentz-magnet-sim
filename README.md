@@ -1,6 +1,9 @@
 # Lorentz Electromagnetism Simulator
 
-[index.html](RUN IT HERE)
+
+
+### [You can run the simulator in your browser by clicking here.](https://maltegruber.github.io/lorentz-magnet-sim/)
+
 
 This simulator explores how magnetism is an emergent property of the relativistic length contraction of space due to charge movements. I was especially interested in illustrating how an electron in a uniform magnetic field will experience a force that causes it to spiral (Lorentz Force/ Cyclotron Motion).
 
